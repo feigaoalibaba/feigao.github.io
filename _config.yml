@@ -413,8 +413,6 @@ changyan:
 #baidushare:
 ##  type: button
 
-  baidushare : true
-      type: button | slide
 # Share
 #jiathis:
 # Warning: JiaThis does not support https.
