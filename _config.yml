@@ -412,7 +412,7 @@ changyan:
 # Warning: Baidu Share does not support https.
 #baidushare:
 ##  type: button
-
+baidushare：true
 # Share
 #jiathis:
 # Warning: JiaThis does not support https.
