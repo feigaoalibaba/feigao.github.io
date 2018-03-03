@@ -1,0 +1,14 @@
+---
+layout: post
+title: 成人学历办理
+tags:
+- 学历
+---
+
+
+# 注意
+zuul 可以实现对内的路由，即所有服务之间互相访问的时候，都通过 zuul 来做。但是这不是正确的用法。zuul 接受的请求应该全部来自于外部，主要指前端（浏览器/app）。内部服务互相调用只需要通过 Eureka Server 进行服务发现和调用即可。
+
+# 启动 zuul 服务
+ 使用 Spring Cloud 来启动 zuul 非常简单，通过引入 spring-cloud-starter-zuul 并提供注解 EnableZuulProxy 即可。
+
