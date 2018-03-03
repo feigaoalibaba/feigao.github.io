@@ -3,6 +3,6 @@ title: about
 layout: page
 ---
 
-无论游戏还是编程都有兴趣，但目前最大的乐趣是养女儿
+习惯形成性格，性格决定命运.
 
-mailto: xli1224@gmail.com
+mailto: jiajingwen1984@163.com
