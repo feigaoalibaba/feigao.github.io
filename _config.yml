@@ -414,7 +414,7 @@ changyan:
 ##  type: button
 
   baidushare : true
-      type: slide
+      type: button | slide
 # Share
 #jiathis:
 # Warning: JiaThis does not support https.
