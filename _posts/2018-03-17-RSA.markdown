@@ -62,7 +62,7 @@ tags:
 3.  Server方使用公钥对请求数据进行签名，并与client签名进行验证；
    
 # RSA JAVA版实例
-
+##RSA加解密示例
 ```java
 package com.jd.y.rsa;
 import com.sun.org.apache.xml.internal.security.utils.Base64;
@@ -431,7 +431,7 @@ public class TestRsaEncrypt {
         LL+sjes/+H7CNYDZiiI=
         解密：我是中国人
 
-测试签名验证过程
+##RSA签名验证示例
 
 ```java
 package com.jd.y.rsa;
@@ -597,9 +597,19 @@ public class RSASignature {
         ubyWu6AjF9Lm9pspJrHlQdDW67vrjzqOP7qlaBzUjjeHbtxTqjZQi4zNSy1lceQtuWv4lAUjlto4
         6M3MR5dv1Fe1GrxuvaA=
         验签结果：true
+        
 # 小结
 
+   RSA算法解决了数据在网络请求中的安全问题
+   -  请求数据加密 防止数据泄露
+   -  请求数据进行签名 防止请求篡改
 
-
+#扩展
+   RSA是非对称加密算法安全性较好，计算性能较低。
+   -  解决数据加密的常用算法，还有对称加密算法DES。（原理：client和Server端商量一个密钥sk 用sk在client加密，在服务端进行解密）
+   -  解决数据签名的常用算法，还有MD5.（原理：平台为用户生成一个密钥颁发给用户 client用请求数据和私钥进行Md5生成signC，
+   server端拿到请求数据和用户的私钥再进行MD5生成signS ，然后判断signS是否与signC一致即可）如百度和高德的开放平台都是选择的这一种，
+   计算性能相对于RSA高。
+   
 
 
