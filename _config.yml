@@ -373,6 +373,8 @@ han: false
 
 # Baidu Analytics ID
 #baidu_analytics:
+ga_track_id: 'UA-115898032-1'
+ga_domain:auto
 
 # Duoshuo ShortName
 #duoshuo_shortname:
