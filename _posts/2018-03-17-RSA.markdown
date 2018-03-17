@@ -65,7 +65,6 @@ tags:
 
 ```java
 package com.jd.y.rsa;
-
 import com.sun.org.apache.xml.internal.security.utils.Base64;
 
 import javax.crypto.BadPaddingException;
@@ -80,11 +79,6 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
-/**
- * @author gaofei12
- * @Desc
- * @date 2018/3/16
- */
 public class RSAEncrypt {
 
     private static final String CHARSET = "UTF-8";
@@ -136,7 +130,7 @@ public class RSAEncrypt {
     /**
      * 从文件中输入流中加载公钥
      *
-     * @param in
+     * @param path
      *            公钥输入流
      * @throws Exception
      *             加载公钥时产生的异常
@@ -186,7 +180,7 @@ public class RSAEncrypt {
     /**
      * 从文件中加载私钥
      *
-     * @param keyFileName
+     * @param path
      *            私钥文件名
      * @return 是否成功
      * @throws Exception
@@ -383,22 +377,14 @@ public class RSAEncrypt {
 
 ```java
 package com.jd.y.rsa;
-
 import com.sun.org.apache.xml.internal.security.utils.Base64;
 
-/**
- * @author gaofei12
- * @Desc
- * @date 2018/3/17
- */
 public class TestRsaEncrypt {
 
     public static void main(String[] args) throws Exception {
 
         String filepath = "D:\\tmp\\";
-
         RSAEncrypt.genKeyPair(filepath);
-
 
         System.out.println("--------------公钥加密私钥解密过程-------------------");
         String plainText = "我是中国人";
@@ -457,13 +443,7 @@ import java.security.PublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
-/**
- * @author gaofei12
- * @Desc
- * @date 2018/3/16
- */
 public class RSASignature {
-
     /**
      * 签名算法
      */
@@ -482,17 +462,13 @@ public class RSASignature {
         try
         {
             PKCS8EncodedKeySpec priPKCS8    = new PKCS8EncodedKeySpec( Base64.decode(privateKey) );
-
             KeyFactory keyf                 = KeyFactory.getInstance(ALGORITHM);
             PrivateKey priKey               = keyf.generatePrivate(priPKCS8);
-
             java.security.Signature signature = java.security.Signature.getInstance(SIGN_ALGORITHMS);
 
             signature.initSign(priKey);
             signature.update( content.getBytes(encode));
-
             byte[] signed = signature.sign();
-
             return Base64.encode(signed);
         }
         catch (Exception e)
@@ -538,7 +514,6 @@ public class RSASignature {
             KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
             byte[] encodedKey = Base64.decode(publicKey);
             PublicKey pubKey = keyFactory.generatePublic(new X509EncodedKeySpec(encodedKey));
-
 
             java.security.Signature signature = java.security.Signature
                     .getInstance(SIGN_ALGORITHMS);
