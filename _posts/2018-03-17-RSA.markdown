@@ -9,8 +9,8 @@ tags:
 # 简介
 
    RSA公钥加密算法是1977年由罗纳德&middot;李维斯特（Ron Rivest）、阿迪&middot;萨莫尔（Adi Shamir）和伦纳德&middot;阿德曼（Leonard Adleman）一起提出的。当时他们三人都在麻省理工学院工作。RSA就是他们三人姓氏开头字母拼在一起组成的。
-   RSA是目前最有影响力的公钥加密算法，它能够抵抗到目前为止已知的绝大多数密码攻击，已被ISO推荐为公钥数据加密算法。
-   RSA算法是一种非对称密码算法，所谓非对称，就是指该算法需要一对密钥，使用其中一个加密，则需要用另一个才能解密。
+   -   RSA是目前最有影响力的公钥加密算法，它能够抵抗到目前为止已知的绝大多数密码攻击，已被ISO推荐为公钥数据加密算法。
+   -   RSA算法是一种非对称密码算法，所谓非对称，就是指该算法需要一对密钥，使用其中一个加密，则需要用另一个才能解密。
 
 # RSA算法原理
 
@@ -40,22 +40,589 @@ tags:
    
        B=A^e2 mod n;
  
-# RSA加解密过程图解
-   ![image](/assets/2018-03-17-RSA/RSA加解密流程.png)
-
-# RSA签名过程图解
-
 # RSA应用
 
+   RSA算法是第一个能同时用于加密和数字签名的算法。
+   -   在网络请求中client和server端的数据不想通过明文传输（明文不安全，如用户name），即进行RSA加密；
+   -   在网络请求中防止请求数据被篡改，即进行RSA签名。
+   
+   
+# RSA加解密过程图解
+   ![image](/assets/2018-03-17-RSA/RSA加解密流程.png)
+流程分析
+1.  Manager根据种子构建密钥对儿，并将公钥公布给client方，将私钥颁布给Server保留；
+2.  Client方使用公钥加密数据，发送给Server方；
+3.  Server方使用私钥来解密数据；
+   
+# RSA签名验证过程图解
+   ![image](/assets/2018-03-17-RSA/RSA签名流程.png)
+流程分析
+1.  Manager根据种子构建密钥对儿，并将私钥公布给client方，将公钥颁布给Server保留；
+2.  Client方使用私钥对请求数据进行client签名，发送给Server方；
+3.  Server方使用公钥对请求数据进行签名，并与client签名进行验证；
+   
 # RSA JAVA版实例
 
 ```java
-第三方
+package com.jd.y.rsa;
+
+import com.sun.org.apache.xml.internal.security.utils.Base64;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.io.*;
+import java.security.*;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+
+/**
+ * @author gaofei12
+ * @Desc
+ * @date 2018/3/16
+ */
+public class RSAEncrypt {
+
+    private static final String CHARSET = "UTF-8";
+    private static final String ALGORITHM = "RSA";
+    /**
+     * 随机生成密钥对
+     */
+    public static void genKeyPair(String filePath) throws UnsupportedEncodingException {
+        // KeyPairGenerator类用于生成公钥和私钥对，基于RSA算法生成对象
+        KeyPairGenerator keyPairGen = null;
+        try {
+            keyPairGen = KeyPairGenerator.getInstance(ALGORITHM);
+        } catch (NoSuchAlgorithmException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        // 初始化密钥对生成器，密钥大小为96-1024位
+        byte[] seed = "userid".getBytes(CHARSET);
+        keyPairGen.initialize(1024,new SecureRandom(seed));
+        // 生成一个密钥对，保存在keyPair中
+        KeyPair keyPair = keyPairGen.generateKeyPair();
+        // 得到私钥
+        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
+        // 得到公钥
+        RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+        try {
+            // 得到公钥字符串
+            String publicKeyString = Base64.encode(publicKey.getEncoded());
+            // 得到私钥字符串
+            String privateKeyString = Base64.encode(privateKey.getEncoded());
+            // 将密钥对写入到文件
+            FileWriter pubfw = new FileWriter(filePath + "/publicKey.keystore");
+            FileWriter prifw = new FileWriter(filePath + "/privateKey.keystore");
+            BufferedWriter pubbw = new BufferedWriter(pubfw);
+            BufferedWriter pribw = new BufferedWriter(prifw);
+            pubbw.write(publicKeyString);
+            pribw.write(privateKeyString);
+            pubbw.flush();
+            pubbw.close();
+            pubfw.close();
+            pribw.flush();
+            pribw.close();
+            prifw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 从文件中输入流中加载公钥
+     *
+     * @param in
+     *            公钥输入流
+     * @throws Exception
+     *             加载公钥时产生的异常
+     */
+    public static String loadPublicKeyByFile(String path) throws Exception {
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(path
+                    + "/publicKey.keystore"));
+            String readLine = null;
+            StringBuilder sb = new StringBuilder();
+            while ((readLine = br.readLine()) != null) {
+                sb.append(readLine);
+            }
+            br.close();
+            return sb.toString();
+        } catch (IOException e) {
+            throw new Exception("公钥数据流读取错误");
+        } catch (NullPointerException e) {
+            throw new Exception("公钥输入流为空");
+        }
+    }
+
+    /**
+     * 从字符串中加载公钥
+     *
+     * @param publicKeyStr
+     *            公钥数据字符串
+     * @throws Exception
+     *             加载公钥时产生的异常
+     */
+    public static RSAPublicKey loadPublicKeyByStr(String publicKeyStr)
+            throws Exception {
+        try {
+            byte[] buffer = Base64.decode(publicKeyStr);
+            KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
+            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(buffer);
+            return (RSAPublicKey) keyFactory.generatePublic(keySpec);
+        } catch (NoSuchAlgorithmException e) {
+            throw new Exception("无此算法");
+        } catch (InvalidKeySpecException e) {
+            throw new Exception("公钥非法");
+        } catch (NullPointerException e) {
+            throw new Exception("公钥数据为空");
+        }
+    }
+
+    /**
+     * 从文件中加载私钥
+     *
+     * @param keyFileName
+     *            私钥文件名
+     * @return 是否成功
+     * @throws Exception
+     */
+    public static String loadPrivateKeyByFile(String path) throws Exception {
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(path
+                    + "/privateKey.keystore"));
+            String readLine = null;
+            StringBuilder sb = new StringBuilder();
+            while ((readLine = br.readLine()) != null) {
+                sb.append(readLine);
+            }
+            br.close();
+            return sb.toString();
+        } catch (IOException e) {
+            throw new Exception("私钥数据读取错误");
+        } catch (NullPointerException e) {
+            throw new Exception("私钥输入流为空");
+        }
+    }
+
+    public static RSAPrivateKey loadPrivateKeyByStr(String privateKeyStr)
+            throws Exception {
+        try {
+            byte[] buffer = Base64.decode(privateKeyStr);
+            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(buffer);
+            KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
+            return (RSAPrivateKey) keyFactory.generatePrivate(keySpec);
+        } catch (NoSuchAlgorithmException e) {
+            throw new Exception("无此算法");
+        } catch (InvalidKeySpecException e) {
+            throw new Exception("私钥非法");
+        } catch (NullPointerException e) {
+            throw new Exception("私钥数据为空");
+        }
+    }
+
+    /**
+     * 公钥加密过程
+     *
+     * @param publicKey
+     *            公钥
+     * @param plainTextData
+     *            明文数据
+     * @return
+     * @throws Exception
+     *             加密过程中的异常信息
+     */
+    public static byte[] encrypt(RSAPublicKey publicKey, byte[] plainTextData)
+            throws Exception {
+        if (publicKey == null) {
+            throw new Exception("加密公钥为空, 请设置");
+        }
+        Cipher cipher = null;
+        try {
+            // 使用默认RSA
+            cipher = Cipher.getInstance(ALGORITHM);
+            // cipher= Cipher.getInstance(ALGORITHM, new BouncyCastleProvider());
+            cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+            byte[] output = cipher.doFinal(plainTextData);
+            return output;
+        } catch (NoSuchAlgorithmException e) {
+            throw new Exception("无此加密算法");
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+            return null;
+        } catch (InvalidKeyException e) {
+            throw new Exception("加密公钥非法,请检查");
+        } catch (IllegalBlockSizeException e) {
+            throw new Exception("明文长度非法");
+        } catch (BadPaddingException e) {
+            throw new Exception("明文数据已损坏");
+        }
+    }
+
+
+    /**
+     * 私钥解密过程
+     *
+     * @param privateKey
+     *            私钥
+     * @param cipherData
+     *            密文数据
+     * @return 明文
+     * @throws Exception
+     *             解密过程中的异常信息
+     */
+    public static byte[] decrypt(RSAPrivateKey privateKey, byte[] cipherData)
+            throws Exception {
+        if (privateKey == null) {
+            throw new Exception("解密私钥为空, 请设置");
+        }
+        Cipher cipher = null;
+        try {
+            // 使用默认RSA
+            cipher = Cipher.getInstance(ALGORITHM);
+            // cipher= Cipher.getInstance(ALGORITHM, new BouncyCastleProvider());
+            cipher.init(Cipher.DECRYPT_MODE, privateKey);
+            byte[] output = cipher.doFinal(cipherData);
+            return output;
+        } catch (NoSuchAlgorithmException e) {
+            throw new Exception("无此解密算法");
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+            return null;
+        } catch (InvalidKeyException e) {
+            throw new Exception("解密私钥非法,请检查");
+        } catch (IllegalBlockSizeException e) {
+            throw new Exception("密文长度非法");
+        } catch (BadPaddingException e) {
+            throw new Exception("密文数据已损坏");
+        }
+    }
+
+    /**
+     * 私钥加密过程
+     *
+     * @param privateKey
+     *            私钥
+     * @param plainTextData
+     *            明文数据
+     * @return
+     * @throws Exception
+     *             加密过程中的异常信息
+     */
+    public static byte[] encrypt(RSAPrivateKey privateKey, byte[] plainTextData)
+            throws Exception {
+        if (privateKey == null) {
+            throw new Exception("加密私钥为空, 请设置");
+        }
+        Cipher cipher = null;
+        try {
+            // 使用默认RSA
+            cipher = Cipher.getInstance(ALGORITHM);
+            cipher.init(Cipher.ENCRYPT_MODE, privateKey);
+            byte[] output = cipher.doFinal(plainTextData);
+            return output;
+        } catch (NoSuchAlgorithmException e) {
+            throw new Exception("无此加密算法");
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+            return null;
+        } catch (InvalidKeyException e) {
+            throw new Exception("加密私钥非法,请检查");
+        } catch (IllegalBlockSizeException e) {
+            throw new Exception("明文长度非法");
+        } catch (BadPaddingException e) {
+            throw new Exception("明文数据已损坏");
+        }
+    }
+
+    /**
+     * 公钥解密过程
+     *
+     * @param publicKey
+     *            公钥
+     * @param cipherData
+     *            密文数据
+     * @return 明文
+     * @throws Exception
+     *             解密过程中的异常信息
+     */
+    public static byte[] decrypt(RSAPublicKey publicKey, byte[] cipherData)
+            throws Exception {
+        if (publicKey == null) {
+            throw new Exception("解密公钥为空, 请设置");
+        }
+        Cipher cipher = null;
+        try {
+            // 使用默认RSA
+            cipher = Cipher.getInstance(ALGORITHM);
+            // cipher= Cipher.getInstance("RSA", new BouncyCastleProvider());
+            cipher.init(Cipher.DECRYPT_MODE, publicKey);
+            byte[] output = cipher.doFinal(cipherData);
+            return output;
+        } catch (NoSuchAlgorithmException e) {
+            throw new Exception("无此解密算法");
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+            return null;
+        } catch (InvalidKeyException e) {
+            throw new Exception("解密公钥非法,请检查");
+        } catch (IllegalBlockSizeException e) {
+            throw new Exception("密文长度非法");
+        } catch (BadPaddingException e) {
+            throw new Exception("密文数据已损坏");
+        }
+    }
+}
+
 ```
+测试验证公钥加密,私钥解密过程 和 私钥加密,公钥解密过程
+
+```java
+package com.jd.y.rsa;
+
+import com.sun.org.apache.xml.internal.security.utils.Base64;
+
+/**
+ * @author gaofei12
+ * @Desc
+ * @date 2018/3/17
+ */
+public class TestRsaEncrypt {
+
+    public static void main(String[] args) throws Exception {
+
+        String filepath = "D:\\tmp\\";
+
+        RSAEncrypt.genKeyPair(filepath);
 
 
+        System.out.println("--------------公钥加密私钥解密过程-------------------");
+        String plainText = "我是中国人";
+        //公钥加密过程
+        byte[] cipherData = RSAEncrypt.encrypt(RSAEncrypt.loadPublicKeyByStr(RSAEncrypt.loadPublicKeyByFile(filepath)), plainText.getBytes());
+        String cipher = Base64.encode(cipherData);
+        //私钥解密过程
+        byte[] res = RSAEncrypt.decrypt(RSAEncrypt.loadPrivateKeyByStr(RSAEncrypt.loadPrivateKeyByFile(filepath)), Base64.decode(cipher));
+        String restr = new String(res);
+        System.out.println("原文：" + plainText);
+        System.out.println("加密：" + cipher);
+        System.out.println("解密：" + restr);
+        System.out.println();
 
-# 联系方式
+        System.out.println("--------------私钥加密公钥解密过程-------------------");
+        plainText="我是中国人";
+        //私钥加密过程
+        cipherData=RSAEncrypt.encrypt(RSAEncrypt.loadPrivateKeyByStr(RSAEncrypt.loadPrivateKeyByFile(filepath)),plainText.getBytes());
+        cipher=Base64.encode(cipherData);
+        //公钥解密过程
+        res=RSAEncrypt.decrypt(RSAEncrypt.loadPublicKeyByStr(RSAEncrypt.loadPublicKeyByFile(filepath)), Base64.decode(cipher));
+        restr=new String(res);
+        System.out.println("原文："+plainText);
+        System.out.println("加密："+cipher);
+        System.out.println("解密："+restr);
+        System.out.println();
+    }
+}
+
+```
+   结果：
+        
+        --------------公钥加密私钥解密过程-------------------
+        原文：我是中国人
+        加密：SbvhC302SboXS4n842bHGOn5HODK8SW7XrPJ+9uiCwtJkm4E/IKmjVfwLu4yoseO6llFOhIrMGLB
+        kuv5thiDNRRDmmDjnzRjK3iqXJu8trHOwS64iFCBsO8USBNEaOlfOQjaqR0fvgu+wsLJNTAg62kv
+        kZemFDksT0lwW/voI2g=
+        解密：我是中国人
+    
+        --------------私钥加密公钥解密过程-------------------
+        原文：我是中国人
+        加密：dUsxPx3mxeBNXWKlOMCzwIJW8bmcIzrBEzpp8uNAKLigZFtosP+5q3NPBfR3WZiqy/aXeBGLAwy9
+        tdV/lvwB/S8m9TFOFon20I1VSy4EobAMkef6G4HWhsVDoBTuqTxn26AU2Ztgf4ThKgNhDvMg6CM6
+        LL+sjes/+H7CNYDZiiI=
+        解密：我是中国人
+
+测试签名验证过程
+
+```java
+package com.jd.y.rsa;
+
+import com.sun.org.apache.xml.internal.security.utils.Base64;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+
+/**
+ * @author gaofei12
+ * @Desc
+ * @date 2018/3/16
+ */
+public class RSASignature {
+
+    /**
+     * 签名算法
+     */
+    public static final  String SIGN_ALGORITHMS = "SHA1WithRSA";
+    private static final String ALGORITHM = "RSA";
+
+    /**
+     * RSA签名
+     * @param content 待签名数据
+     * @param privateKey 商户私钥
+     * @param encode 字符集编码
+     * @return 签名值
+     */
+    public static String sign(String content, String privateKey, String encode)
+    {
+        try
+        {
+            PKCS8EncodedKeySpec priPKCS8    = new PKCS8EncodedKeySpec( Base64.decode(privateKey) );
+
+            KeyFactory keyf                 = KeyFactory.getInstance(ALGORITHM);
+            PrivateKey priKey               = keyf.generatePrivate(priPKCS8);
+
+            java.security.Signature signature = java.security.Signature.getInstance(SIGN_ALGORITHMS);
+
+            signature.initSign(priKey);
+            signature.update( content.getBytes(encode));
+
+            byte[] signed = signature.sign();
+
+            return Base64.encode(signed);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static String sign(String content, String privateKey)
+    {
+        try
+        {
+            PKCS8EncodedKeySpec priPKCS8    = new PKCS8EncodedKeySpec( Base64.decode(privateKey) );
+            KeyFactory keyf = KeyFactory.getInstance(ALGORITHM);
+            PrivateKey priKey = keyf.generatePrivate(priPKCS8);
+            java.security.Signature signature = java.security.Signature.getInstance(SIGN_ALGORITHMS);
+            signature.initSign(priKey);
+            signature.update( content.getBytes());
+            byte[] signed = signature.sign();
+            return Base64.encode(signed);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * RSA验签名检查
+     * @param content 待签名数据
+     * @param sign 签名值
+     * @param publicKey 分配给开发商公钥
+     * @param encode 字符集编码
+     * @return 布尔值
+     */
+    public static boolean doCheck(String content, String sign, String publicKey,String encode)
+    {
+        try
+        {
+            KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
+            byte[] encodedKey = Base64.decode(publicKey);
+            PublicKey pubKey = keyFactory.generatePublic(new X509EncodedKeySpec(encodedKey));
+
+
+            java.security.Signature signature = java.security.Signature
+                    .getInstance(SIGN_ALGORITHMS);
+
+            signature.initVerify(pubKey);
+            signature.update( content.getBytes(encode) );
+
+            boolean bverify = signature.verify( Base64.decode(sign) );
+            return bverify;
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public static boolean doCheck(String content, String sign, String publicKey)
+    {
+        try
+        {
+            KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
+            byte[] encodedKey = Base64.decode(publicKey);
+            PublicKey pubKey = keyFactory.generatePublic(new X509EncodedKeySpec(encodedKey));
+
+
+            java.security.Signature signature = java.security.Signature
+                    .getInstance(SIGN_ALGORITHMS);
+
+            signature.initVerify(pubKey);
+            signature.update( content.getBytes() );
+
+            boolean bverify = signature.verify( Base64.decode(sign) );
+            return bverify;
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public static void main(String[] args) throws Exception {
+        String filepath="D:\\tmp\\";
+
+//        RSAEncrypt.genKeyPair(filepath);
+
+        System.out.println("---------------私钥签名过程------------------");
+        String content="ak=我是中国人";
+        String signstr=RSASignature.sign(content,RSAEncrypt.loadPrivateKeyByFile(filepath));
+        System.out.println("签名原串："+content);
+        System.out.println("签名串："+signstr);
+        System.out.println();
+
+        System.out.println("---------------公钥校验签名------------------");
+        System.out.println("签名原串："+content);
+        System.out.println("签名串："+signstr);
+
+        System.out.println("验签结果："+RSASignature.doCheck(content, signstr, RSAEncrypt.loadPublicKeyByFile(filepath)));
+        System.out.println();
+
+    }
+}
+
+```
+   结果：
+        
+        ---------------私钥签名过程------------------
+        签名原串：ak=我是中国人
+        签名串：SXWPG36JgVJufdVs7W2gCY09hfK34fVDQfl99p16MoxYE6pI1YHAKpj8laEsOy5EMCXZntlmgF4R
+        ubyWu6AjF9Lm9pspJrHlQdDW67vrjzqOP7qlaBzUjjeHbtxTqjZQi4zNSy1lceQtuWv4lAUjlto4
+        6M3MR5dv1Fe1GrxuvaA=
+        
+        ---------------公钥校验签名------------------
+        签名原串：ak=我是中国人
+        签名串：SXWPG36JgVJufdVs7W2gCY09hfK34fVDQfl99p16MoxYE6pI1YHAKpj8laEsOy5EMCXZntlmgF4R
+        ubyWu6AjF9Lm9pspJrHlQdDW67vrjzqOP7qlaBzUjjeHbtxTqjZQi4zNSy1lceQtuWv4lAUjlto4
+        6M3MR5dv1Fe1GrxuvaA=
+        验签结果：true
+# 小结
 
 
 
