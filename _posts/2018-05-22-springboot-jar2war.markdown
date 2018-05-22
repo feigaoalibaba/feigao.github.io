@@ -64,7 +64,7 @@ tags:
 ```
 如果我们构建的是wai包并部署到外部tomcat则需要使用它，如果使用内置servlet容器则不需要，外置tomcat环境的配置需要这个类的configure方法来指定初始化资源。
 
-```
+```Java
 @SpringBootApplication
 // mapper 接口类扫描包配置
 public class Application extends SpringBootServletInitializer{
