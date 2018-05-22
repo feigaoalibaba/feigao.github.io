@@ -8,19 +8,22 @@ tags:
 
 
 # 问题
-
+   在mac os x上启动tomcat的时候，报 java.net.BindException: Permission denied <null>:80
 # 原因
-   
+   Mac OS X 因为要绑定1024以下的端口需要ROOT权限（但是如果用root权限启动eclipse或tomcat又会造成， 启动创建的各类文件是root的，普通用户无法删除。）
 # 解决方法
-
+   使用 PF (packet filter)做端口转发
 # 具体步骤
-开启端口转发之后，即可配置端口转发规则。你可以跟着手册来：
+  -   开启端口转发功能
+     见：https://www.jianshu.com/p/6052831a8e91
+  -   开启端口转发之后，即可配置端口转发规则。你可以跟着手册来：
 ```java
 $ man pfctl
 $ man pf.conf
 ```
 
-或者跟着下文手动新建文件。如 /etc/pf.anchors/http 文件内容如下：
+或者跟着下文手动新建文件。
+1.  创建/etc/pf.anchors/http 文件内容如下：
 
 ```java
 rdr pass on lo0 inet proto tcp from any to any port 80 -> 127.0.0.1 port 8080
@@ -28,13 +31,13 @@ rdr pass on lo0 inet proto tcp from any to any port 443 -> 127.0.0.1 port 4443
 rdr pass on en0 inet proto tcp from any to any port 80 -> 127.0.0.1 port 8080
 rdr pass on en0 inet proto tcp from any to any port 443 -> 127.0.0.1 port 4443
 ```
-检查其正确性：
+
+2.  检查其正确性：
 ```java
 $ sudo pfctl -vnf /etc/pf.anchors/http
 ```
 
-修改 pf 的主配置文件 /etc/pf.conf 开启我们添加的锚点 http。
-
+3.  修改 pf 的主配置文件 /etc/pf.conf 开启我们添加的锚点 http。
 pf.conf 对指令的顺序有严格要求，相同的指令需要放在一起，否则会报错 Rules must be in order: options, normalization, queueing, translation, filtering.
 ```java
 在 rdr-anchor "com.apple/*" 下添加
@@ -44,21 +47,22 @@ rdr-anchor "http-forwarding"
 load anchor "http-forwarding" from "/etc/pf.anchors/http"
 ```
 
-最后导入并允许运行：
+4.  导入并允许运行：
 ```java
 $ sudo pfctl -ef /etc/pf.conf
 ```
-使用 -e 命令启用 pf 服务。使用 -E 命令强制重启 pf 服务：
+
+5.  使用 -e 命令启用 pf 服务。使用 -E 命令强制重启 pf 服务：
 ```java
 $ sudo pfctl -E
 ```
-使用 -d 命令关闭 pf：
+
+6.  使用 -d 命令关闭 pf：
 ```java
 $ sudo pfctl -d
 ```
 
-从 Mavericks 起 pf 服务不再默认开机自启。如需开机启动 pf 服务，请往下看。
-
+  -   从 Mavericks 起 pf 服务不再默认开机自启。如需开机启动 pf 服务，请往下看。
 新版 Mac OS 10.11 EI Captian 加入了系统完整性保护机制，需重启到安全模式执行下述命令关闭文件系统保护。
 ```java
 $ csrutil enable --without fs
