@@ -22,8 +22,8 @@ $ man pfctl
 $ man pf.conf
 ```
 
-或者跟着下文手动新建文件。
-1.  创建/etc/pf.anchors/http 文件内容如下：
+   或者跟着下文手动新建文件。
+1. 创建/etc/pf.anchors/http 文件内容如下：
 
 ```java
 rdr pass on lo0 inet proto tcp from any to any port 80 -> 127.0.0.1 port 8080
@@ -32,12 +32,12 @@ rdr pass on en0 inet proto tcp from any to any port 80 -> 127.0.0.1 port 8080
 rdr pass on en0 inet proto tcp from any to any port 443 -> 127.0.0.1 port 4443
 ```
 
-2.  检查其正确性：
+2. 检查其正确性：
 ```java
 $ sudo pfctl -vnf /etc/pf.anchors/http
 ```
 
-3.  修改 pf 的主配置文件 /etc/pf.conf 开启我们添加的锚点 http。
+3. 修改 pf 的主配置文件 /etc/pf.conf 开启我们添加的锚点 http。
 pf.conf 对指令的顺序有严格要求，相同的指令需要放在一起，否则会报错 Rules must be in order: options, normalization, queueing, translation, filtering.
 ```java
 在 rdr-anchor "com.apple/*" 下添加
@@ -47,28 +47,29 @@ rdr-anchor "http-forwarding"
 load anchor "http-forwarding" from "/etc/pf.anchors/http"
 ```
 
-4.  导入并允许运行：
+4. 导入并允许运行：
 ```java
 $ sudo pfctl -ef /etc/pf.conf
 ```
 
-5.  使用 -e 命令启用 pf 服务。使用 -E 命令强制重启 pf 服务：
+5. 使用 -e 命令启用 pf 服务。使用 -E 命令强制重启 pf 服务：
 ```java
 $ sudo pfctl -E
 ```
 
-6.  使用 -d 命令关闭 pf：
+6. 使用 -d 命令关闭 pf：
 ```java
 $ sudo pfctl -d
 ```
 
   -   从 Mavericks 起 pf 服务不再默认开机自启。如需开机启动 pf 服务，请往下看。
-新版 Mac OS 10.11 EI Captian 加入了系统完整性保护机制，需重启到安全模式执行下述命令关闭文件系统保护。
+    新版 Mac OS 10.11 EI Captian 加入了系统完整性保护机制，需重启到安全模式执行下述命令关闭文件系统保护。
 ```java
 $ csrutil enable --without fs
-然后才能修改 /System/Library/LaunchDaemons/com.apple.pfctl.plist 文件实现开机自启用配置。
 ```
-向 plist 文件中添加 -e 行，如下所示：
+然后才能修改 /System/Library/LaunchDaemons/com.apple.pfctl.plist 文件实现开机自启用配置。
+
+   向 plist 文件中添加 -e 行，如下所示：
 ```java
 <string>pfctl</string>
 <string>-e</string>
