@@ -87,6 +87,7 @@ public class Application extends SpringBootServletInitializer{
 	    builder.sources(this.getClass());
 	    return super.configure(builder);
     }
+}
 ```
 
 经过以上配置，我们把构建好的war包拷到tomcat的webapp下，启动tomcat就可以访问啦!
