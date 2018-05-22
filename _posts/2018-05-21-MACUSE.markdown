@@ -15,7 +15,7 @@ tags:
    使用 PF (packet filter)做端口转发
 # 具体步骤
   -   开启端口转发功能
-     见：https://www.jianshu.com/p/6052831a8e91
+      暂时可忽略,有问题再参考：https://www.jianshu.com/p/6052831a8e91
   -   开启端口转发之后，即可配置端口转发规则。你可以跟着手册来：
 ```java
 $ man pfctl
