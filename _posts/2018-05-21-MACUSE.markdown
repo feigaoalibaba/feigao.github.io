@@ -12,10 +12,9 @@ tags:
 # 原因
    Mac OS X 因为要绑定1024以下的端口需要ROOT权限（但是如果用root权限启动eclipse或tomcat又会造成， 启动创建的各类文件是root的，普通用户无法删除。）
 # 解决方法
-   使用 PF (packet filter)做端口转发
+   使用 PF `(packet filter)`做端口转发
 # 具体步骤
--   开启端口转发功能
-      暂时可忽略,有问题再参考：https://www.jianshu.com/p/6052831a8e91
+-   开启端口转发功能暂时可忽略,有问题再参考[此文章](https://www.jianshu.com/p/6052831a8e91)
 -   开启端口转发之后，即可配置端口转发规则。你可以跟着手册来：
    ```java
     $ man pfctl
@@ -25,10 +24,10 @@ tags:
 1. 创建/etc/pf.anchors/http 文件内容如下：
 
    ```java
-       rdr pass on lo0 inet proto tcp from any to any port 80 -> 127.0.0.1 port 8080
-       rdr pass on lo0 inet proto tcp from any to any port 443 -> 127.0.0.1 port 4443
-       rdr pass on en0 inet proto tcp from any to any port 80 -> 127.0.0.1 port 8080
-       rdr pass on en0 inet proto tcp from any to any port 443 -> 127.0.0.1 port 4443
+    rdr pass on lo0 inet proto tcp from any to any port 80 -> 127.0.0.1 port 8080
+    rdr pass on lo0 inet proto tcp from any to any port 443 -> 127.0.0.1 port 4443
+    rdr pass on en0 inet proto tcp from any to any port 80 -> 127.0.0.1 port 8080
+    rdr pass on en0 inet proto tcp from any to any port 443 -> 127.0.0.1 port 4443
    ```
 2. 检查其正确性
    
@@ -63,14 +62,14 @@ tags:
 -   从 Mavericks 起 pf 服务不再默认开机自启。如需开机启动 pf 服务，请往下看。
         新版 Mac OS 10.11 EI Captian 加入了系统完整性保护机制，需重启到安全模式执行下述命令关闭文件系统保护。
    ```java
-   $ csrutil enable --without fs
+    $ csrutil enable --without fs
    ```
    然后才能修改 /System/Library/LaunchDaemons/com.apple.pfctl.plist 文件实现开机自启用配置。
     
    向 plist 文件中添加 -e 行，如下所示：
    ```java
-   <string>pfctl</string>
-   <string>-e</string>
-   <string>-f</string>
-   <string>/etc/pf.conf</string>
+    <string>pfctl</string>
+    <string>-e</string>
+    <string>-f</string>
+    <string>/etc/pf.conf</string>
    ```
