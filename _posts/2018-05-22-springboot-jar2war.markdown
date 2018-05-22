@@ -14,7 +14,7 @@ tags:
    
 # 正文
 如何把springboot应用部署到外部tomcat，需要完成如下五个步骤：
-##把pom.xml文件中打包结果由jar改成war,如下：
+## 把pom.xml文件中打包结果由jar改成war,如下：
 ```
     <modelVersion>4.0.0</modelVersion>
     <groupId>spring-boot-panminlan-mybatis-test</groupId>
@@ -22,7 +22,7 @@ tags:
     <packaging>war</packaging>
     <version>0.0.1-SNAPSHOT</version>
 ```
-##添加maven的war打包插件
+## 添加maven的war打包插件
 并且给war包起一个名字，tomcat部署后的访问路径会需要，如：http:localhost:8080/myweb/****
 ```
  <plugin>     
@@ -34,7 +34,7 @@ tags:
     </configuration>     
    </plugin>     
 ```
-##排除org.springframework.boot依赖中的tomcat内置容器，这是很重要的一步
+## 排除org.springframework.boot依赖中的tomcat内置容器，这是很重要的一步
 ```
 	<dependency>
 		<groupId>org.springframework.boot</groupId>
@@ -47,14 +47,14 @@ tags:
 		</exclusions>
 	</dependency>
 ```
-##添加对servlet API的依赖
+## 添加对servlet API的依赖
 ```
     <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>javax.servlet-api</artifactId>
     </dependency>
 ```
-##继承`SpringBootServletInitializer` ，并覆盖它的 configure 方法
+## 继承`SpringBootServletInitializer` ，并覆盖它的 configure 方法
 如下图代码，为什么需要提供这样一个SpringBootServletInitializer子类并覆盖它的config方法呢，我们看下该类原代码的注释:
 ```
 /**Note that a WebApplicationInitializer is only needed if you are building a war file and
