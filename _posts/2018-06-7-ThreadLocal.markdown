@@ -41,7 +41,7 @@ tags:
 ```  
    set方法会获取当前的线程，通过当前线程获取ThreadLocalMap对象。然后把需要存储的值放到这个map里面。如果没有就调用createMap创建对象。
    
-##  getMap方法
+## getMap方法
 ```java
     ThreadLocalMap getMap(Thread t) {
            return t.threadLocals;
@@ -49,7 +49,7 @@ tags:
 ```
    getMap方法直接返回当前Thread的threadLocals变量，这样说明了之所以说ThreadLocal是线程局部变量就是因为它只是通过ThreadLocal把变量存在了Thread本身而已。
   
-##  createMap方法
+## createMap方法
 ```java
    void createMap(Thread t, T firstValue) {
            t.threadLocals = new ThreadLocalMap(this, firstValue);
@@ -57,7 +57,7 @@ tags:
 ```
    在set的时候如果不存在threadLocals，直接创建对象。由上看出，放入map的key是当前的ThreadLocal，value是需要存放的内容，所以我们设置属性的时候需要注意存放和获取的是一个ThreadLocal。
    
-   ##get方法
+## get方法
 ```java
    public T get() {
            Thread t = Thread.currentThread();
@@ -74,7 +74,7 @@ tags:
 # 场景
 本文应用ThreadLocal的场景：在调用API接口的时候传递了一些公共参数，这些公共参数携带了一些设备信息，服务端接口根据不同的信息组装不同的格式数据返回给客户端。假定服务器端需要通过设备类型(device)来下发下载地址，当然接口也有同样的其他逻辑，我们只要在返回数据的时候判断好是什么类型的客户端就好了。如下:
 
- ##场景一
+## 场景一
  请求
    ```
  GET api/users?device=android
@@ -88,7 +88,7 @@ tags:
    link : "https://play.google.com/store/apps/details?id=***"
  }
 ```
- ##场景二
+## 场景二
  请求
  
 ```
@@ -190,5 +190,5 @@ tags:
          return resultDO;
      }
 ```
-#总结
+# 总结
  这种机制很方便，因为他避免了在调用每一个方法时都要传递执行上下文信息，合理的使用ThreadLocal可以起到事倍功半的效果，但是需要避免滥用，例如将所有的全局变量作为ThreadLocal对象，ThreadLocal类似全局变量，他能降低代码的可重用性，并在类之间引入隐含的耦合性，所以再使用前需要格外小心。
