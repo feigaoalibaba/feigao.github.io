@@ -40,7 +40,7 @@ final ThreadLocal threadLocal=new ThreadLocal(){
             }
         }).start();
 ```
-#InheritableThreadLocal实现
+# InheritableThreadLocal实现
 那其实很多时候我们是有子线程获得父线程ThreadLocal的需求的,要如何解决这个问题呢？这就是InheritableThreadLocal这个类所做的事情。先来看下InheritableThreadLocal所做的事情。
 
 ```java  
@@ -128,7 +128,7 @@ so,在最开始的代码示例中，如果把ThreadLocal对象换成InheritableT
 
  # InheritableThreadLocal还有问题吗？
  
- ##问题场景
+ ## 问题场景
  我们在使用线程的时候往往不会只是简单的new Thrad对象，而是使用线程池，当然线程池的好处多多。这里不详解，既然这里提出了问题，那么线程池会给InheritableThreadLocal带来什么问题呢？我们列举一下线程池的特点：
  
  1. 为了减小创建线程的开销，线程池会缓存已经使用过的线程
@@ -181,13 +181,13 @@ final InheritableThreadLocal<Span> inheritableThreadLocal = new InheritableThrea
 ![image](/assets/2018-03-01-xueli/20160930170435541.png)
 
 so，InheritableThreadLocal还是不能够解决线程池当中获得父线程中ThreadLocal中的值。
- ##造成问题的原因
+ ## 造成问题的原因
  那么造成这个问题的原因是什么呢？如何让任务之间使用缓存的线程不受影响呢？实际原因是，我们的线程在执行完毕的时候并没有清除ThreadLocal中的值，导致后面的任务重用现在的localMap。
- ##解决方案
+ ## 解决方案
  如果我们能够，在使用完这个线程的时候清除所有的localMap，在submit新任务的时候在重新重父线程中copy所有的Entry。然后重新给当前线程的t.inhertableThreadLocal赋值。这样就能够解决在线程池中每一个新的任务都能够获得父线程中ThreadLocal中的值而不受其他任务的影响，因为在生命周期完成的时候会自动clear所有的数据。Alibaba的一个库解决了这个问题github:alibaba/transmittable-thread-local
  
- ##transmittable-thread-local实现原理
- ###如何使用
+ ## transmittable-thread-local实现原理
+ ### 如何使用
  这个库最简单的方式是这样使用的,通过简单的修饰，使得提交的runable拥有了上一节所述的功能。具体的API文档详见github，这里不再赘述
  
 
@@ -203,7 +203,7 @@ executorService.submit(ttlRunnable);
 // Task中可以读取, 值是"value-set-in-parent"
 String value = parent.get();
 ```
-###原理简述
+### 原理简述
 这个方法TtlRunnable.get(task)最终会调用构造方法，返回的是该类本身，也是一个Runable,这样就完成了简单的装饰。最重要的是在run方法这个地方。
 
 ```java
@@ -240,7 +240,7 @@ public final class TtlRunnable implements Runnable {
 ```
 在上面的使用线程池的例子当中，如果换成这种修饰的方式进行操作，B任务得到的肯定是父线程中ThreadLocal的值，解决了在线程池中InheritableThreadLocal不能解决的问题。
 
-#总结
+# 总结
    - ThreadLocal 解决了当前线程中传递数据的功能
    - InheritableThreadLocal 解决了父子线程中传递数据的功能 可以完成父线程到子线程的值传递。
    - TransmittableThreadLocal 解决了 对于使用线程池等会缓存线程的组件的情况，线程由线程池创建好，并且线程是缓存起来反复使用的；这时父子线程关系的ThreadLocal值传递已经没有意义，应用需要的实际上是把 任务提交给线程池时的ThreadLocal值传递到 任务执行时。
