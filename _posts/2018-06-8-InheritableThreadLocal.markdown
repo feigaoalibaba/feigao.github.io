@@ -127,9 +127,9 @@ private ThreadLocalMap(ThreadLocalMap parentMap) {
 3. 因为复写了getMap(Thread)和CreateMap()方法,所以get值得时候，就可以在getMap(t)的时候就会从t.inheritableThreadLocals中拿到map对象，从而实现了可以拿到父线程ThreadLocal中的值
 so,在最开始的代码示例中，如果把ThreadLocal对象换成InheritableThreadLocal对象，那么get到的字符会是“xiezhaodong”而不是NULL
 
- # InheritableThreadLocal还有问题吗？
+# InheritableThreadLocal还有问题吗？
  
- ## 问题场景
+## 问题场景
  我们在使用线程的时候往往不会只是简单的new Thrad对象，而是使用线程池，当然线程池的好处多多。这里不详解，既然这里提出了问题，那么线程池会给InheritableThreadLocal带来什么问题呢？我们列举一下线程池的特点：
  
  1. 为了减小创建线程的开销，线程池会缓存已经使用过的线程
@@ -182,13 +182,13 @@ final InheritableThreadLocal<Span> inheritableThreadLocal = new InheritableThrea
 ![image](/assets/2018-03-01-xueli/20160930170435541.png)
 
 so，InheritableThreadLocal还是不能够解决线程池当中获得父线程中ThreadLocal中的值。
- ## 造成问题的原因
+## 造成问题的原因
  那么造成这个问题的原因是什么呢？如何让任务之间使用缓存的线程不受影响呢？实际原因是，我们的线程在执行完毕的时候并没有清除ThreadLocal中的值，导致后面的任务重用现在的localMap。
- ## 解决方案
+## 解决方案
  如果我们能够，在使用完这个线程的时候清除所有的localMap，在submit新任务的时候在重新重父线程中copy所有的Entry。然后重新给当前线程的t.inhertableThreadLocal赋值。这样就能够解决在线程池中每一个新的任务都能够获得父线程中ThreadLocal中的值而不受其他任务的影响，因为在生命周期完成的时候会自动clear所有的数据。Alibaba的一个库解决了这个问题github:alibaba/transmittable-thread-local
  
- ## transmittable-thread-local实现原理
- ### 如何使用
+## transmittable-thread-local实现原理
+### 如何使用
  这个库最简单的方式是这样使用的,通过简单的修饰，使得提交的runable拥有了上一节所述的功能。具体的API文档详见github，这里不再赘述
  
 
