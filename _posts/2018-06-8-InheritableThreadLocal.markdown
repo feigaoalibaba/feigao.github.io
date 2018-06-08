@@ -40,7 +40,7 @@ final ThreadLocal threadLocal=new ThreadLocal(){
             }
         }).start();
 ```  
-  
+
 #InheritableThreadLocal实现
 那其实很多时候我们是有子线程获得父线程ThreadLocal的需求的,要如何解决这个问题呢？这就是InheritableThreadLocal这个类所做的事情。先来看下InheritableThreadLocal所做的事情。
 
