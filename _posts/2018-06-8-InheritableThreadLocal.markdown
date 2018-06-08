@@ -81,8 +81,8 @@ public class InheritableThreadLocal<T> extends ThreadLocal<T> {
     */
    ThreadLocal.ThreadLocalMap inheritableThreadLocals = null;
 ```
-   - Q：InheritableThreadLocal是如何实现在子线程中能拿到当前父线程中的值的呢？
-   - A：一个常见的想法就是把父线程的所有的值都copy到子线程中。
+   Q：InheritableThreadLocal是如何实现在子线程中能拿到当前父线程中的值的呢？
+   A：一个常见的想法就是把父线程的所有的值都copy到子线程中。
  下面来看看在线程new Thread的时候线程都做了些什么？
 ```java
 private void init(ThreadGroup g, Runnable target, String name,
