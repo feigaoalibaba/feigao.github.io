@@ -242,6 +242,6 @@ public final class TtlRunnable implements Runnable {
 在上面的使用线程池的例子当中，如果换成这种修饰的方式进行操作，B任务得到的肯定是父线程中ThreadLocal的值，解决了在线程池中InheritableThreadLocal不能解决的问题。
 
 #总结
-    ThreadLocal 解决了当前线程中传递数据的功能
-    InheritableThreadLocal 解决了父子线程中传递数据的功能 可以完成父线程到子线程的值传递。
-    TransmittableThreadLocal 解决了 对于使用线程池等会缓存线程的组件的情况，线程由线程池创建好，并且线程是缓存起来反复使用的；这时父子线程关系的ThreadLocal值传递已经没有意义，应用需要的实际上是把 任务提交给线程池时的ThreadLocal值传递到 任务执行时。
+   - ThreadLocal 解决了当前线程中传递数据的功能
+   - InheritableThreadLocal 解决了父子线程中传递数据的功能 可以完成父线程到子线程的值传递。
+   - TransmittableThreadLocal 解决了 对于使用线程池等会缓存线程的组件的情况，线程由线程池创建好，并且线程是缓存起来反复使用的；这时父子线程关系的ThreadLocal值传递已经没有意义，应用需要的实际上是把 任务提交给线程池时的ThreadLocal值传递到 任务执行时。
