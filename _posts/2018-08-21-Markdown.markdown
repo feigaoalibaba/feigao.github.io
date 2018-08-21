@@ -1,0 +1,114 @@
+---
+layout: post
+title: React中集成markdown编辑器
+tags:
+- react
+- Markdown
+---
+
+# 概要
+   -  Mditor编辑器
+   -  如何集成markdown
+# 前言
+   
+   近期项目中需要实现一个像markdown一样的写文档的功能,在网上发现一个Mditor编辑器正符合预期效果。
+   所以就拿来用了。下面就介绍如何集成Markdown编辑器。
+   (引用：https://blog.csdn.net/Jason847/article/details/80298549)
+   
+# Mditor应用
+   
+## 为什么要用Mditor编辑器
+   [ M ] arkdown + E [ ditor ] = Mditor 
+   Mditor 是一个简洁、易于集成、方便扩展、期望舒服的编写 markdown 的编辑器，仅此而已… 
+   支持浏览器: chrome/safari/firefox/ie9+
+   
+## 集成markdown步骤
+
+### 引入资源文件
+   - 引入CDN资源
+   
+```javaScript
+<link rel="stylesheet" href="https://unpkg.com/mditor@1.0.5/dist/css/mditor.min.css" />
+<script src="https://unpkg.com/mditor@1.0.5/dist/js/mditor.min.js"></script>
+```  
+   采用上述方式，发现并没有明显效果，可能资源资源版本过低。所以推荐下面一种方式。当然也可以将本地资源推送到自己的CDN上使用。
+   
+   - 引入本地资源
+```javaScript   
+   <link rel="stylesheet" href="mditor/css/mditor.min.css" />
+   <script src="mditor/js/mditor.min.js"></script>
+```  
+  拷贝https://github.com/Houfeng/mditor/tree/master/packages/embed/dist目录下的资源到本地，打包到mditor目录下，再进行引用。
+
+### 引入控件
+
+   * 添加textarea元素，并创建Mditor实例
+```javaScript   
+class App extends Component {
+     render() {
+       return (
+         <div>
+           <textarea id="md_editor"></textarea>
+         </div>
+       );
+     }
+   
+     componentDidMount(){
+       var ele_textarea = document.getElementById('md_editor');
+       var mditor =  Mditor.fromTextarea(ele_textarea);
+     }
+   }   
+```     
+   * 预览效果： 
+
+    <img>
+    
+### 工具栏
+
+```javaScript   
+  mditor.on('ready',function(){
+      mditor.toolbar.items.map(item => {
+          console.log('key:',item.key, '  name:',item.name)
+      })
+  });
+```   
+
+```Text   
+  key: shift+alt+b name: bold 
+  key: shift+alt+i name: italic 
+  key: shift+alt+e name: underline 
+  key: shift+alt+d name: strikethrough 
+  key: shift+alt+1 name: header 
+  key: shift+alt+q name: quote 
+  key: shift+alt+c name: code 
+  key: shift+alt+o name: list-ol 
+  key: shift+alt+u name: list-ul 
+  key: shift+alt+l name: link 
+  key: shift+alt+t name: table 
+  key: shift+alt+h name: line 
+  key: shift+alt+p name: image 
+  key: shift+alt+/ name: help 
+  key: shift+alt+f name: toggleFullScreen 
+  key: shift+alt+v name: togglePreview 
+  key: shift+alt+s name: toggleSplit
+```  
+   可以针对工具条中的按钮进行新增、替换、删除监听等操作，具体可参考原文API
+## Markdown内容解析并显示
+* 通过npm安装
+```Text   
+    npm install mditor --save
+```  
+
+```Text   
+   "dependencies": {
+       "mditor": "^1.3.3"
+    }
+```  
+* 将markdown内容解析成html代码进行展示
+```Text   
+   var mditor = require("mditor");
+       var parser = new mditor.Parser();
+       var html = parser.parse("** Hello mditor! **");   
+```
+# 总结
+ 
