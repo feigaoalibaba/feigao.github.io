@@ -10,9 +10,8 @@ tags:
    -  Mditor编辑器
    -  如何集成markdown
 # 前言
-   
    近期项目中需要实现一个像markdown一样的写文档的功能,在网上发现一个Mditor编辑器正符合预期效果。
-   所以就拿来用了。下面就介绍如何集成Markdown编辑器。
+  所以就拿来用了。下面就介绍如何集成Markdown编辑器。
    (引用：https://blog.csdn.net/Jason847/article/details/80298549)
    
 # Mditor应用
@@ -34,10 +33,11 @@ tags:
    采用上述方式，发现并没有明显效果，可能资源资源版本过低。所以推荐下面一种方式。当然也可以将本地资源推送到自己的CDN上使用。
    
    - 引入本地资源
+   
 ```javaScript   
    <link rel="stylesheet" href="mditor/css/mditor.min.css" />
    <script src="mditor/js/mditor.min.js"></script>
-```  
+```
   拷贝https://github.com/Houfeng/mditor/tree/master/packages/embed/dist目录下的资源到本地，打包到mditor目录下，再进行引用。
 
 ### 引入控件
@@ -61,7 +61,7 @@ class App extends Component {
 ```     
    * 预览效果： 
 
-    <img>
+  
     
 ### 工具栏
 
