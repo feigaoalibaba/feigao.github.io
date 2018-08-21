@@ -10,7 +10,7 @@ tags:
    -  Mditor编辑器
    -  如何集成markdown
 # 前言
-   近期项目中需要实现一个像markdown一样的写文档的功能,在网上发现一个Mditor编辑器正符合预期效果。
+   近期项目中需要实现一个像markdown一样的写文档的功能,在网上发现一个Mditor编辑器恰好符合预期效果。
   所以就拿来用了。下面就介绍如何集成Markdown编辑器。
    (引用：https://blog.csdn.net/Jason847/article/details/80298549)
    
@@ -95,20 +95,20 @@ class App extends Component {
    可以针对工具条中的按钮进行新增、替换、删除监听等操作，具体可参考原文API
 ## Markdown内容解析并显示
 * 通过npm安装
-```Text   
+```jshelllanguage
     npm install mditor --save
 ```  
-
-```Text   
+* 添加依赖  
+```jshelllanguage   
    "dependencies": {
        "mditor": "^1.3.3"
     }
 ```  
 * 将markdown内容解析成html代码进行展示
-```Text   
+```javascript  
    var mditor = require("mditor");
-       var parser = new mditor.Parser();
-       var html = parser.parse("** Hello mditor! **");   
+   var parser = new mditor.Parser();
+   var html = parser.parse("** Hello mditor! **");   
 ```
 # 总结
  
