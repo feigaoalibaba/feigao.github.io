@@ -352,7 +352,7 @@ custom_logo:
 # Available value:
 #    normal | night | night eighties | night blue | night bright
 # https://github.com/chriskempson/tomorrow-theme
-highlight_theme: night eighties 
+highlight_theme: night eighties
 
 
 # ---------------------------------------------------------------
@@ -381,7 +381,7 @@ ga_domain: auto
 
 # Disqus
 disqus:
-  enable: false
+  enable: true
   shortname:
   count: true
   # hide comments (visitors need to click to load the comments)
