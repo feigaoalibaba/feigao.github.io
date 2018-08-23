@@ -209,20 +209,6 @@ font:
 # ---------------------------------------------------------------
 
 
-#  -------------------begin-----------------
-sidebar: true                           # 是否开启侧边栏.
-sidebar-about-description: "说点装逼的话。。。"
-sidebar-avatar:/img/avatar-by.JPG      # 你的个人头像 这里你可以改成我在img文件夹中的两张备用照片
-
-# SNS settings
-RSS: false
-weibo_username:     username
-zhihu_username:     username
-github_username:    username
-facebook_username:  username
-jianshu_username:	jianshu_id
-
-#  ------------------end------------------
 # Social Links
 # Key is the link label showing to end users.
 # Value is the target link (E.g. GitHub: https://github.com/iissnan)
@@ -395,10 +381,9 @@ ga_domain: auto
 
 # Disqus
 disqus:
-  enable: true
-  shortname:qiubaiying
+  enable: false
+  shortname:
   count: true
-  disqus_username: qiubaiying
   # hide comments (visitors need to click to load the comments)
   # count need to be false when hide is true
   hide: false
