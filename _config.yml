@@ -382,8 +382,9 @@ ga_domain: auto
 # Disqus
 disqus:
   enable: true
-  shortname:
+  shortname:qiubaiying
   count: true
+  disqus_username: qiubaiying
   # hide comments (visitors need to click to load the comments)
   # count need to be false when hide is true
   hide: false
