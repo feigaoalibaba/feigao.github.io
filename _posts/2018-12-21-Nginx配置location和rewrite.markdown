@@ -1,5 +1,5 @@
 
-# 1. location正则写法
+#  location正则写法
 一个示例：
 
     location  = / {
@@ -110,7 +110,7 @@
 http://tengine.taobao.org/book/chapter_02.html
 http://nginx.org/en/docs/http/ngx_http_rewrite_module.html
 
-# 2. Rewrite规则
+# Rewrite规则
 rewrite功能就是，使用nginx提供的全局变量或自己设置的变量，结合正则表达式和标志位实现url重写以及重定向。rewrite只能放在server{},location{},if{}中，并且只能对域名后边的除去传递的参数外的字符串起作用，例如 http://seanlook.com/a/we/index.php?id=1&u=str 只对/a/we/index.php重写。语法rewrite regex replacement [flag];
 
 如果相对域名或参数字符串起作用，可以使用全局变量匹配，也可以使用proxy_pass反向代理。
@@ -122,7 +122,7 @@ rewrite功能就是，使用nginx提供的全局变量或自己设置的变量�
 -  3.执行选定的location中的rewrite指令
 如果其中某步URI被重写，则重新循环执行1-3，直到找到真实存在的文件；循环超过10次，则返回500 Internal Server Error错误。
 
-## 2.1 flag标志位
+##  flag标志位
 -  last : 相当于Apache的[L]标记，表示完成rewrite
 -  break : 停止执行当前虚拟主机的后续rewrite指令集
 -  redirect : 返回302临时重定向，地址栏会显示跳转后的地址
@@ -132,7 +132,7 @@ rewrite功能就是，使用nginx提供的全局变量或自己设置的变量�
 last一般写在server和if中，而break一般使用在location中
 last不终止重写后的url匹配，即新的url会再从server走一遍匹配流程，而break终止重写后的匹配
 break和last都能组织继续执行后面的rewrite指令
-## 2.2 if指令与全局变量
+##  if指令与全局变量
 if判断指令
 语法为if(condition){...}，对给定的条件condition进行判断。如果为真，大括号内的rewrite指令将被执行，if条件(conditon)可以是如下任何内容：
 
@@ -209,7 +209,7 @@ $document_uri：/test1/test2/test.php
 $document_root：/var/www/html
 $request_filename：/var/www/html/test1/test2/test.php
 
-## 2.3 常用正则
+##  常用正则
 -  . ： 匹配除换行符以外的任意字符
 -  ? ： 重复0次或1次
 -  (+) ： 重复1次或更多次
@@ -223,7 +223,7 @@ $request_filename：/var/www/html/test1/test2/test.php
 -  [a-z] ： 匹配a-z小写字母的任意一个
 小括号()之间匹配的内容，可以在后面通过$1来引用，$2表示的是前面第二个()里的内容。正则里面容易让人困惑的是\转义特殊字符。
 
-## 2.4 rewrite实例
+##  rewrite实例
 例1：
 
     http {
@@ -267,7 +267,7 @@ $request_filename：/var/www/html/test1/test2/test.php
 例3：
 见 ssl部分页面加密 。
 
-#参考
+#  参考
 
 http://www.nginx.cn/216.html
 http://www.ttlsa.com/nginx/nginx-rewriting-rules-guide/
