@@ -13,17 +13,16 @@ tags:
 
 # 问题 
 
-    ```java
-            Exception in thread "main" java.lang.StackOverflowError
-                at java.util.concurrent.ConcurrentHashMap.get(ConcurrentHashMap.java:936)
-                at java.util.concurrent.ConcurrentHashMap.containsKey(ConcurrentHashMap.java:964)
-                at org.apache.logging.slf4j.SLF4JLoggerContext.getLogger(SLF4JLoggerContext.java:40)
-                at org.apache.logging.slf4j.Log4jLoggerFactory.newLogger(Log4jLoggerFactory.java:37)
-                at org.apache.logging.slf4j.Log4jLoggerFactory.newLogger(Log4jLoggerFactory.java:29)
-                at org.apache.logging.log4j.spi.AbstractLoggerAdapter.getLogger(AbstractLoggerAdapter.java:47)
-                at org.apache.logging.slf4j.Log4jLoggerFactory.getLogger(Log4jLoggerFactory.java:29)
-                at org.slf4j.LoggerFactory.getLogger(LoggerFactory.java:284)
-    ```
+    Exception in thread "main" java.lang.StackOverflowError
+                    at java.util.concurrent.ConcurrentHashMap.get(ConcurrentHashMap.java:936)
+                    at java.util.concurrent.ConcurrentHashMap.containsKey(ConcurrentHashMap.java:964)
+                    at org.apache.logging.slf4j.SLF4JLoggerContext.getLogger(SLF4JLoggerContext.java:40)
+                    at org.apache.logging.slf4j.Log4jLoggerFactory.newLogger(Log4jLoggerFactory.java:37)
+                    at org.apache.logging.slf4j.Log4jLoggerFactory.newLogger(Log4jLoggerFactory.java:29)
+                    at org.apache.logging.log4j.spi.AbstractLoggerAdapter.getLogger(AbstractLoggerAdapter.java:47)
+                    at org.apache.logging.slf4j.Log4jLoggerFactory.getLogger(Log4jLoggerFactory.java:29)
+                    at org.slf4j.LoggerFactory.getLogger(LoggerFactory.java:284)
+        
 
 # 原因
 
