@@ -267,6 +267,41 @@ $request_filename：/var/www/html/test1/test2/test.php
 例3：
 见 ssl部分页面加密 。
 
+# Nginx--try_files
+
+   Nginx的配置语法灵活，可控制度非常高。在0.7以后的版本中加入了一个try_files指令，配合命名location，可以部分替代原本常用的rewrite配置方式，提高解析效率。
+ 
+   作用域：server location
+   
+       location  / {
+                       root  /var/www/build;
+                       index  index.html index.htm;
+                       try_files $uri $uri/ @rewrites;
+               }
+         
+       location @rewrites {
+                    rewrite ^(.+)$ /index.html last;
+               }
+               
+   try_files $uri $uri/ @aaaaa; 这句话是什么意思？
+    
+   try_files从字面上理解就是尝试文件，再结合环境理解就是“尝试读取文件”，那他想读取什么文件呢，
+   答：读取静态文件
+    
+   $uri  这个是nginx的一个变量，存放着用户访问的地址,
+   比如：http://www.xxx.com/index.html, 那么$uri就是 /index.html
+    
+   $uri/ 代表访问的是一个目录，比如：http://www.xxx.com/hello/test/    ，那么$uri/就是 /hello/test/
+    
+   完整的解释就是：try_files 去尝试到网站目录读取用户访问的文件，如果第一个变量存在，就直接返回；
+   不存在继续读取第二个变量，如果存在，直接返回；不存在直接跳转到第三个参数上。
+    
+    
+   比如用户访问这个网地址：http://www.xxx.com/test.html
+   try_files首先会判断他是文件，还是一个目录，结果发现他是文件，与第一个参数 $uri变量匹配。
+   然后去到网站目录下去查找test.html文件是否存在，如果存在直接读取返回。如果不存在直接跳转到第三个参数，而第三个参数是一个location,而这个location里面配置的就是rewrite规则。           
+
+
 #  参考
 
 http://www.nginx.cn/216.html
